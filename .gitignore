@@ -62,3 +62,6 @@ typings/
 
 # vscode config
 .vscode
+
+# build directory
+build/

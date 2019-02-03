@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import mockEvents from './mockEvents';
@@ -64,7 +63,7 @@ export default class App extends Component {
     });
 
     return selectedEvents.map(event => {
-      return <div>{event.title}</div>;
+      return <div key={event.id}>{event.title}</div>;
     });
   };
 
