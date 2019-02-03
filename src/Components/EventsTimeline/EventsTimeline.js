@@ -7,7 +7,7 @@ export default class EventsTimeline extends React.Component {
     super(props);
     this.state = {
       activeEvent: undefined,
-      manualDisplay: 0
+      lifeEvents: this.props.lifeEvents
     };
     this.whileNoSelection();
   }
@@ -24,7 +24,7 @@ export default class EventsTimeline extends React.Component {
       return (
         <LifeEvent
           onEventHighlight={id => this.onEventHighlight(id)}
-          key={event.id}
+          key={`${event.id}-${event.forceShow}`}
           event={event}
           forceShow={this.state.manualDisplay === index}
         />
@@ -33,13 +33,20 @@ export default class EventsTimeline extends React.Component {
   };
 
   whileNoSelection = () => {
-    this.setState(prevState => {
-      return {
-        manualDisplay:
-          prevState.manualDisplay + 1 >= this.props.lifeEvents.length
-            ? 0
-            : prevState.manualDisplay + 1
-      };
+    let currentActiveIndex = this.state.lifeEvents.findIndex(event => {
+      return event.forceShow === true;
+    });
+    currentActiveIndex =
+      currentActiveIndex === -1 ? this.state.lifeEvents.length - 1 : currentActiveIndex;
+
+    let newLifeEvents = [...this.state.lifeEvents];
+    newLifeEvents[currentActiveIndex].forceShow = false;
+    newLifeEvents[
+      currentActiveIndex + 1 === this.state.lifeEvents.length ? 0 : currentActiveIndex + 1
+    ].forceShow = true;
+
+    this.setState({
+      lifeEvents: newLifeEvents
     });
     setTimeout(() => {
       if (!this.state.activeEvent) {
@@ -60,7 +67,7 @@ export default class EventsTimeline extends React.Component {
         {this.renderLifeEvents()}
         {this.state.activeEvent
           ? this.state.activeEvent.content
-          : this.props.lifeEvents[this.state.manualDisplay].content}
+          : this.props.lifeEvents.find(event => event.forceShow).content}
       </React.Fragment>
     );
   }
