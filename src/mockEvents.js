@@ -6,12 +6,14 @@ const mock = {
     {
       id: 0,
       title: 'An Education event',
-      category: 'Education'
+      category: 'Education',
+      content: 'here is the Education content'
     },
     {
       id: 1,
       title: 'An Industry event',
-      category: 'Industry'
+      category: 'Industry',
+      content: 'here is the Industry content'
     }
   ]
 };

@@ -3,9 +3,14 @@ import React from 'react';
 import LifeEvent from '../LifeEvent';
 
 export default class EventsTimeline extends React.Component {
-  state = {
-    activeEvent: undefined
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeEvent: undefined,
+      manualDisplay: 0
+    };
+    this.whileNoSelection();
+  }
   renderLifeEvents = () => {
     // take only first element of returned array to extract name
     const [selectedCategory] = Object.entries(this.props.lifeEventCategories).find(
@@ -15,20 +20,37 @@ export default class EventsTimeline extends React.Component {
       return selectedCategory === 'All' || event.category === selectedCategory;
     });
 
-    return selectedEvents.map(event => {
+    return selectedEvents.map((event, index) => {
       return (
         <LifeEvent
           onEventHighlight={id => this.onEventHighlight(id)}
           key={event.id}
           event={event}
+          forceShow={this.state.manualDisplay === index}
         />
       );
     });
   };
 
+  whileNoSelection = () => {
+    this.setState(prevState => {
+      return {
+        manualDisplay:
+          prevState.manualDisplay + 1 >= this.props.lifeEvents.length
+            ? 0
+            : prevState.manualDisplay + 1
+      };
+    });
+    setTimeout(() => {
+      if (!this.state.activeEvent) {
+        this.whileNoSelection();
+      }
+    }, 3000);
+  };
+
   onEventHighlight = id => {
     this.setState({
-      activeEvent: id
+      activeEvent: this.props.lifeEvents[id]
     });
   };
 
@@ -36,7 +58,9 @@ export default class EventsTimeline extends React.Component {
     return (
       <React.Fragment>
         {this.renderLifeEvents()}
-        {this.state.activeEvent}
+        {this.state.activeEvent
+          ? this.state.activeEvent.content
+          : this.props.lifeEvents[this.state.manualDisplay].content}
       </React.Fragment>
     );
   }
